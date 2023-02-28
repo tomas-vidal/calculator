@@ -4,15 +4,14 @@ const numberButtons = document.querySelectorAll(".numberButton");
 const operationButton = document.querySelectorAll(".normalOperation");
 const acButton = document.getElementById("ac");
 const equalButton = document.querySelector(".equalButton");
+const changeSign = document.querySelector("#changeSign");
+const decimalButton = document.querySelector("#decimal");
 let operatorDisplayBottom = false;
 let operatorDisplayTop = false;
 let resultDisplayed = false;
 let operator;
 
 const writeNumber = (e) => {
-  if (resultDisplayed) {
-    return;
-  }
   if (operatorDisplayBottom) {
     displayBottom.textContent = "";
     displayTop.textContent += operator;
@@ -54,21 +53,30 @@ const selectOperation = (e) => {
 const doMath = (a, b) => {
   resultDisplayed = true;
   let number1 = Array.from(a);
-  let number2 = parseInt(b);
   number1.pop();
-  number1 = parseInt(number1.join(""));
+  number1 = parseFloat(number1.join(""));
+  let number2 = parseFloat(b);
+  let result;
   switch (operator) {
     case "+":
-      return number1 + number2;
+      result = number1 + number2;
+      break;
     case "-":
-      return number1 - number2;
+      result = number1 - number2;
+      break;
     case "*":
-      return number1 * number2;
+      result = number1 * number2;
+      break;
     case "/":
-      return number1 / number2;
+      result = number1 / number2;
+      break;
     default:
       return;
   }
+  if (result % 1 !== 0) {
+    result = result.toFixed(2);
+  }
+  return result;
 };
 
 numberButtons.forEach((button) => {
@@ -89,6 +97,9 @@ acButton.addEventListener("click", () => {
 });
 
 equalButton.addEventListener("click", () => {
+  if (!operatorDisplayTop) {
+    return;
+  }
   displayBottom.textContent = doMath(
     displayTop.textContent,
     displayBottom.textContent
@@ -96,4 +107,14 @@ equalButton.addEventListener("click", () => {
   displayTop.textContent = "";
   operatorDisplayBottom = false;
   operatorDisplayTop = false;
+});
+
+changeSign.addEventListener("click", () => {
+  if (!operatorDisplayBottom && displayBottom.textContent !== "") {
+    if (parseInt(displayBottom.textContent) > 0) {
+      displayBottom.textContent = "-" + displayBottom.textContent;
+    } else {
+      displayBottom.textContent = displayBottom.textContent.slice(1);
+    }
+  }
 });
