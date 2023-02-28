@@ -76,6 +76,9 @@ const doMath = (a, b) => {
       result = number1 * number2;
       break;
     case "/":
+      if (number2 === 0) {
+        return "ERROR";
+      }
       result = number1 / number2;
       break;
     case "%":
