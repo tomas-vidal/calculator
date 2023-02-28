@@ -21,26 +21,28 @@ const writeNumber = (e) => {
     operatorDisplayBottom = false;
     operatorDisplayTop = true;
   }
-  displayBottom.textContent += e.target.textContent;
+  displayBottom.textContent += e;
 };
 
 const selectOperation = (e) => {
   if (displayBottom.textContent === "" && displayTop.textContent === "") {
     return;
   }
-  operatorDisplayBottom = true;
+
   resultDisplayed = false;
+  operatorDisplayBottom = true;
 
   if (!operatorDisplayTop) {
-    operator = e.target.textContent;
+    operator = e;
   }
+
   if (operatorDisplayTop) {
     displayTop.textContent = doMath(
       displayTop.textContent,
       displayBottom.textContent
     );
 
-    operator = e.target.textContent;
+    operator = e;
     displayBottom.textContent = operator;
     resultDisplayed = false;
     return;
@@ -48,9 +50,11 @@ const selectOperation = (e) => {
   if (displayBottom.textContent !== "" && displayTop.textContent === "") {
     displayTop.textContent = displayBottom.textContent;
     displayBottom.textContent = operator;
+    return;
   }
   if (displayBottom.textContent !== operator) {
     displayBottom.textContent = operator;
+    return;
   }
 };
 
@@ -74,33 +78,20 @@ const doMath = (a, b) => {
     case "/":
       result = number1 / number2;
       break;
+    case "%":
+      result = (number2 * number1) / 100;
+      break;
     default:
       return;
   }
   if (result % 1 !== 0) {
     result = result.toFixed(2);
   }
+  operatorDisplayTop = false;
   return result;
 };
 
-numberButtons.forEach((button) => {
-  button.addEventListener("click", writeNumber);
-});
-
-operationButton.forEach((button) => {
-  button.addEventListener("click", selectOperation);
-});
-
-acButton.addEventListener("click", () => {
-  displayBottom.textContent = "";
-  displayTop.textContent = "";
-  operator = null;
-  operatorDisplayBottom = false;
-  operatorDisplayTop = false;
-  resultDisplayed = false;
-});
-
-equalButton.addEventListener("click", () => {
+const equalFunction = () => {
   if (!operatorDisplayTop) {
     return;
   }
@@ -111,7 +102,41 @@ equalButton.addEventListener("click", () => {
   displayTop.textContent = "";
   operatorDisplayBottom = false;
   operatorDisplayTop = false;
+};
+
+const decimalFunction = () => {
+  if (
+    displayBottom.textContent !== "" &&
+    !resultDisplayed &&
+    !operatorDisplayBottom &&
+    !displayBottom.textContent.includes(".")
+  ) {
+    displayBottom.textContent += ".";
+  }
+};
+
+const acFunction = () => {
+  displayBottom.textContent = "";
+  displayTop.textContent = "";
+  operator = null;
+  operatorDisplayBottom = false;
+  operatorDisplayTop = false;
+  resultDisplayed = false;
+};
+
+numberButtons.forEach((button) => {
+  button.addEventListener("click", (e) => writeNumber(e.target.textContent));
 });
+
+operationButton.forEach((button) => {
+  button.addEventListener("click", (e) =>
+    selectOperation(e.target.textContent)
+  );
+});
+
+acButton.addEventListener("click", acFunction);
+
+equalButton.addEventListener("click", equalFunction);
 
 changeSign.addEventListener("click", () => {
   if (!operatorDisplayBottom && displayBottom.textContent !== "") {
@@ -123,13 +148,27 @@ changeSign.addEventListener("click", () => {
   }
 });
 
-decimalButton.addEventListener("click", () => {
-  if (
-    displayBottom.textContent !== "" &&
-    !resultDisplayed &&
-    !operatorDisplayBottom &&
-    !displayBottom.textContent.includes(".")
-  ) {
-    displayBottom.textContent += ".";
+decimalButton.addEventListener("click", decimalFunction);
+
+addEventListener("keydown", (e) => {
+  let key = e.key;
+  // FIX THIS, DOESN'T WORK WITH A SWITCH
+  if (/^[0-9]/.test(key)) {
+    writeNumber(key);
+    return;
+  } else if (/^[/*+-]/.test(key)) {
+    selectOperation(key);
+    return;
+  } else if (/^Enter/.test(key)) {
+    equalFunction();
+    return;
+  } else if (/Backspace/.test(key)) {
+    acFunction();
+    return;
+  } else if (/^[.]/.test(key)) {
+    decimalFunction();
+    return;
+  } else {
+    return;
   }
 });
