@@ -5,13 +5,16 @@ const operationButton = document.querySelectorAll(".normalOperation");
 const acButton = document.getElementById("ac");
 const equalButton = document.querySelector(".equalButton");
 const changeSign = document.querySelector("#changeSign");
-const decimalButton = document.querySelector("#decimal");
+const decimalButton = document.querySelector(".decimalButton");
 let operatorDisplayBottom = false;
 let operatorDisplayTop = false;
 let resultDisplayed = false;
 let operator;
 
 const writeNumber = (e) => {
+  if (resultDisplayed) {
+    return;
+  }
   if (operatorDisplayBottom) {
     displayBottom.textContent = "";
     displayTop.textContent += operator;
@@ -39,6 +42,7 @@ const selectOperation = (e) => {
 
     operator = e.target.textContent;
     displayBottom.textContent = operator;
+    resultDisplayed = false;
     return;
   }
   if (displayBottom.textContent !== "" && displayTop.textContent === "") {
@@ -116,5 +120,16 @@ changeSign.addEventListener("click", () => {
     } else {
       displayBottom.textContent = displayBottom.textContent.slice(1);
     }
+  }
+});
+
+decimalButton.addEventListener("click", () => {
+  if (
+    displayBottom.textContent !== "" &&
+    !resultDisplayed &&
+    !operatorDisplayBottom &&
+    !displayBottom.textContent.includes(".")
+  ) {
+    displayBottom.textContent += ".";
   }
 });
