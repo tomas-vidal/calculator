@@ -88,3 +88,8 @@ body {
 .numberButton {
   background-color: #313131;
 }
+
+.equalButton {
+  background-color: #f69a06;
+  font-weight: bold;
+}
